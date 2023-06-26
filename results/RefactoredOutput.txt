@@ -1,0 +1,123 @@
+
+*** TRANSITION: Skip3F3
+{'time': '28', 'battery_load': '2989', 'battery_charge': '89856000'}
+*** TRANSITION: updateXT
+{'time': '39', 'battery_load': '3403', 'battery_charge': '89676660'}
+*** TRANSITION: updateXT
+{'time': '49', 'battery_load': '14934', 'battery_charge': '89497320'}
+*** TRANSITION: updateUhf
+{'time': '55', 'battery_load': '17564', 'battery_charge': '89293140'}
+*** TRANSITION: updateXT
+{'time': '57', 'battery_load': '6033', 'battery_charge': '88397100'}
+*** TRANSITION: updateUhf
+{'time': '59', 'battery_load': '3403', 'battery_charge': '87343260'}
+*** TRANSITION: updateXT
+{'time': '67', 'battery_load': '2989', 'battery_charge': '86981280'}
+*** TRANSITION: updateSun
+{'time': '68', 'battery_load': '-2711', 'battery_charge': '86777100'}
+*** TRANSITION: Skip3F2
+{'time': '72', 'battery_load': '-2711', 'battery_charge': '86777100'}
+*** TRANSITION: updateXK
+{'time': '119', 'battery_load': '-2297', 'battery_charge': '86597760'}
+*** TRANSITION: Skip3F3
+{'time': '124', 'battery_load': '-2297', 'battery_charge': '86597760'}
+*** TRANSITION: updateXK
+{'time': '129', 'battery_load': '9234', 'battery_charge': '86760420'}
+*** TRANSITION: SkipXT
+{'time': '133', 'battery_load': '9234', 'battery_charge': '86760420'}
+*** TRANSITION: updateXK
+{'time': '135', 'battery_load': '-2297', 'battery_charge': '86898240'}
+*** TRANSITION: updateXK
+{'time': '145', 'battery_load': '-2711', 'battery_charge': '86344200'}
+*** TRANSITION: updateUhf
+{'time': '147', 'battery_load': '-81', 'battery_charge': '86482020'}
+*** TRANSITION: updateUhf
+{'time': '155', 'battery_load': '-2711', 'battery_charge': '86644680'}
+*** TRANSITION: Skip3F2
+{'time': '168', 'battery_load': '-2711', 'battery_charge': '86644680'}
+*** TRANSITION: SkipXK
+{'time': '212', 'battery_load': '-2711', 'battery_charge': '86644680'}
+*** TRANSITION: update3F3
+{'time': '221', 'battery_load': '-2297', 'battery_charge': '86649540'}
+*** TRANSITION: SkipXT
+{'time': '229', 'battery_load': '-2297', 'battery_charge': '86649540'}
+*** TRANSITION: updateUhf
+{'time': '241', 'battery_load': '333', 'battery_charge': '86812200'}
+*** TRANSITION: updateUhf
+{'time': '251', 'battery_load': '-2297', 'battery_charge': '86950020'}
+*** TRANSITION: update3F3
+{'time': '251', 'battery_load': '1152', 'battery_charge': '86930040'}
+*** TRANSITION: updateSun
+{'time': '251', 'battery_load': '752', 'battery_charge': '87067860'}
+*** TRANSITION: updateSun
+{'time': '251', 'battery_load': '6852', 'battery_charge': '86998740'}
+*** TRANSITION: updateSun
+{'time': '251', 'battery_load': '752', 'battery_charge': '86953620'}
+*** TRANSITION: Skip3F2
+{'time': '265', 'battery_load': '752', 'battery_charge': '86953620'}
+*** TRANSITION: SkipXT
+{'time': '325', 'battery_load': '752', 'battery_charge': '86953620'}
+*** TRANSITION: updateUhf
+{'time': '336', 'battery_load': '3382', 'battery_charge': '86542500'}
+*** TRANSITION: update3F3
+{'time': '344', 'battery_load': '-67', 'battery_charge': '86497380'}
+*** TRANSITION: updateUhf
+{'time': '346', 'battery_load': '-2697', 'battery_charge': '86294460'}
+*** TRANSITION: update3F3
+{'time': '354', 'battery_load': '-3111', 'battery_charge': '86298480'}
+*** TRANSITION: updateSun
+{'time': '354', 'battery_load': '-2711', 'battery_charge': '86460300'}
+*** TRANSITION: updateSun
+{'time': '354', 'battery_load': '2989', 'battery_charge': '86646960'}
+*** TRANSITION: updateSun
+{'time': '354', 'battery_load': '-2711', 'battery_charge': '86809620'}
+*** TRANSITION: Skip3F3
+{'time': '354', 'battery_load': '-2711', 'battery_charge': '86809620'}
+*** TRANSITION: update3F2
+{'time': '366', 'battery_load': '-2297', 'battery_charge': '86630280'}
+*** TRANSITION: update3F2
+{'time': '396', 'battery_load': '1152', 'battery_charge': '86792940'}
+*** TRANSITION: updateSun
+{'time': '396', 'battery_load': '752', 'battery_charge': '86930760'}
+*** TRANSITION: updateSun
+{'time': '396', 'battery_load': '6852', 'battery_charge': '86861640'}
+*** TRANSITION: updateSun
+{'time': '396', 'battery_load': '752', 'battery_charge': '86816520'}
+*** TRANSITION: SkipXT
+{'time': '421', 'battery_load': '752', 'battery_charge': '86816520'}
+*** TRANSITION: Skip3F3
+{'time': '423', 'battery_load': '752', 'battery_charge': '86816520'}
+*** TRANSITION: updateUhf
+{'time': '431', 'battery_load': '3382', 'battery_charge': '86405400'}
+*** TRANSITION: updateUhf
+{'time': '440', 'battery_load': '752', 'battery_charge': '86360280'}
+*** TRANSITION: update3F2
+{'time': '489', 'battery_load': '-2697', 'battery_charge': '86157360'}
+*** TRANSITION: update3F2
+{'time': '499', 'battery_load': '-3111', 'battery_charge': '86112240'}
+*** TRANSITION: updateSun
+{'time': '499', 'battery_load': '-2711', 'battery_charge': '86274060'}
+*** TRANSITION: updateSun
+{'time': '499', 'battery_load': '2989', 'battery_charge': '86460720'}
+*** TRANSITION: updateSun
+{'time': '499', 'battery_load': '-2711', 'battery_charge': '86623380'}
+*** TRANSITION: update3F2
+{'time': '499', 'battery_load': '-2297', 'battery_charge': '86444040'}
+*** TRANSITION: update3F2
+{'time': '499', 'battery_load': '1152', 'battery_charge': '86606700'}
+*** TRANSITION: updateSun
+{'time': '499', 'battery_load': '752', 'battery_charge': '86744520'}
+*** TRANSITION: updateSun
+{'time': '499', 'battery_load': '6852', 'battery_charge': '86675400'}
+*** TRANSITION: SkipXT
+{'time': '516', 'battery_load': '6852', 'battery_charge': '86675400'}
+*** TRANSITION: Skip3F3
+{'time': '521', 'battery_load': '6852', 'battery_charge': '86675400'}
+*** TRANSITION: updateSun
+{'time': '526', 'battery_load': '752', 'battery_charge': '86630280'}
+*** TRANSITION: updateUhf
+{'time': '528', 'battery_load': '3382', 'battery_charge': '86219160'}
+*** TRANSITION: updateUhf
+{'time': '532', 'battery_load': '752', 'battery_charge': '86174040'}
+*** TRANSITION: update3F2
+{'time': '590', 'battery_load': '-2697', 'battery_charge': '85971120'}

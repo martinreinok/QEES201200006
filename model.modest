@@ -1,0 +1,257 @@
+// ### Generated using generate_modest_time_structure.py
+int(0..100000000)[] SUN_START = [68, 160, 251, 343, 435, 526, 618, 710, 802, 893, 985, 1077, 1169, 1260, 1352, 1444, 1536, 1627, 1719, 1811, 1903, 1994, 2086, 2178, 2270, 2361, 2453, 2545, 2636, 2728, 100000000];
+int(0..100000000)[] SUN_END = [126, 218, 310, 401, 493, 585, 677, 769, 860, 952, 1044, 1136, 1228, 1319, 1411, 1503, 1595, 1686, 1778, 1870, 1962, 2054, 2145, 2237, 2329, 2421, 2513, 2604, 2696, 2788, 100000000];
+const int SUN_LEN = 30;
+int(0..SUN_LEN + 1) sun_i = 0;
+
+int(0..100000000)[] UHF_START = [55, 147, 241, 336, 431, 528, 1521, 1615, 1709, 1805, 1900, 100000000];
+int(0..100000000)[] UHF_END = [59, 155, 251, 346, 440, 532, 1528, 1624, 1719, 1814, 1907, 100000000];
+const int UHF_LEN = 11;
+int(0..UHF_LEN + 1) uhf_i = 0;
+
+int(0..100000000)[] L_BAND_3F2_START = [7, 102, 198, 295, 396, 497, 596, 692, 787, 883, 980, 1079, 1181, 1280, 1377, 1472, 1568, 1664, 1763, 1864, 1964, 2062, 2157, 2253, 2349, 2447, 2548, 2649, 2746, 100000000];
+int(0..100000000)[] L_BAND_3F2_END = [100, 195, 291, 388, 489, 590, 688, 785, 880, 976, 1073, 1172, 1274, 1373, 1470, 1565, 1661, 1757, 1856, 1957, 2057, 2154, 2250, 2346, 2442, 2540, 2641, 2741, 2839, 100000000];
+const int L_BAND_3F2_LEN = 29;
+int(0..L_BAND_3F2_LEN + 1) l_band_3f2_i = 1;
+
+int(0..100000000)[] L_BAND_3F3_START = [58, 154, 251, 352, 453, 551, 647, 743, 838, 935, 1036, 1137, 1236, 1332, 1428, 1523, 1620, 1719, 1821, 1920, 2017, 2113, 2208, 2304, 2403, 2504, 2604, 2702, 100000000];
+int(0..100000000)[] L_BAND_3F3_END = [151, 246, 344, 445, 546, 644, 740, 835, 931, 1028, 1128, 1230, 1329, 1425, 1520, 1616, 1713, 1812, 1914, 2013, 2110, 2205, 2301, 2397, 2496, 2597, 2697, 2794, 100000000];
+const int L_BAND_3F3_LEN = 28;
+int(0..L_BAND_3F3_LEN + 1) l_band_3f3_i = 0;
+
+int(0..100000000)[] X_BAND_KOUROU_START = [129, 222, 812, 907, 1596, 1693, 2280, 2378, 100000000];
+int(0..100000000)[] X_BAND_KOUROU_END = [135, 232, 820, 916, 1605, 1699, 2290, 2382, 100000000];
+const int X_BAND_KOUROU_LEN = 8;
+int(0..X_BAND_KOUROU_LEN + 1) x_band_kourou_i = 0;
+
+int(0..100000000)[] X_BAND_TOULOUSE_START = [49, 143, 239, 335, 431, 526, 624, 1517, 1612, 1708, 1804, 1900, 1996, 100000000];
+int(0..100000000)[] X_BAND_TOULOUSE_END = [57, 153, 248, 344, 441, 536, 628, 1526, 1622, 1717, 1814, 1910, 2004, 100000000];
+const int X_BAND_TOULOUSE_LEN = 13;
+int(0..X_BAND_TOULOUSE_LEN + 1) x_band_toulouse_i = 0;
+// ###
+
+
+// Clocks
+clock time;
+int current_time;
+
+// Battery
+int battery_load = 2989; // Background power consumption
+int last_load = 2989;  // Only updated in battery model
+const int BATTERY_CAPACITY = 149760000;  // mJ
+const int BATTERY_EMPTY = (int) (BATTERY_CAPACITY * 0.5); // 0.4
+int(0..BATTERY_CAPACITY) battery_charge = (int)(BATTERY_CAPACITY * 0.6);
+
+// Power consumption
+bool solar_l_band = false;  // increases sun power by 400 when true
+int SUN_CONSUMPTION = 5700;   // 5700
+const int BACKGROUND_CONSUMPTION = 2989;
+const int UHF_CONSUMPTION = 2630;
+const int L_BAND_CONSUMPTION = 3863;
+const int X_BAND_CONSUMPTION = 11945;
+const int PREHEAT_CONSUMPTION = 414;
+
+// Jobs
+bool job_active = false;
+const int PREHEATING = 20;
+const int SLEWING = 10;
+int jobs_skipped = 0;
+int uhf_jobs_done = 0;
+int l_3f2_jobs_done = 0;
+int l_3f3_jobs_done = 0;
+int x_toulou_jobs_done = 0;
+int x_kourou_jobs_done = 0;
+// dynamic cost based on jobs done
+
+// Actions
+action SkipUhf, Skip3F2, Skip3F3, SkipXT, SkipXK;
+action updateSun, updateUhf, update3F2, update3F3, updateXT, updateXK;
+
+// Properties
+const int COST_BAD = 1000;
+const int COST_SKIP = 80;
+transient int cost = 0;
+
+// Maximum time the model should run for
+const int MAX_TIME = 600;
+
+// Cost is used to assign 1x Lband 2x Xband
+property EfficientRoute = Xmin(S(cost), time >= MAX_TIME);
+
+function int BatteryCharge()
+// Cap battery at CAPACITY or reduce cattery to 0 when less than BATTERY_EMPTY
+= (battery_charge - last_load * 60) > BATTERY_EMPTY ? min((battery_charge - last_load * 60), BATTERY_CAPACITY) : 0;
+
+const int DynCost = 30;  // MAX = DynCost * 3
+function int DynamicCost_3F2()
+= (l_3f2_jobs_done * 2 >= l_3f3_jobs_done * 2 ? DynCost : 0) + (l_3f2_jobs_done * 2 >= x_toulou_jobs_done ? DynCost : 0) + (l_3f2_jobs_done * 2 >= x_kourou_jobs_done ? DynCost : 0);
+
+function int DynamicCost_3F3()
+= (l_3f3_jobs_done * 2 >= l_3f2_jobs_done * 2 ? DynCost : 0) + (l_3f3_jobs_done * 2 >= x_toulou_jobs_done ? DynCost : 0) + (l_3f3_jobs_done * 2 >= x_kourou_jobs_done ? DynCost : 0);
+
+function int DynamicCost_XT()
+= (x_toulou_jobs_done >= l_3f2_jobs_done * 2 ? DynCost : 0) + (x_toulou_jobs_done >= l_3f3_jobs_done * 2 ? DynCost : 0) + (x_toulou_jobs_done >= x_kourou_jobs_done ? DynCost : 0);
+
+function int DynamicCost_XK()
+= (x_kourou_jobs_done >= l_3f2_jobs_done * 2 ? DynCost : 0) + (x_kourou_jobs_done >= l_3f3_jobs_done * 2 ? DynCost : 0) + (x_kourou_jobs_done >= x_toulou_jobs_done ? DynCost : 0);
+
+process LinearBattery()
+{   
+    int last_time;
+    do {
+        alt {
+            // Battery not empty
+            :: when (battery_charge > BATTERY_EMPTY) 
+            alt {
+                :: updateUhf {= battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: updateSun {= battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: update3F2 {= battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: update3F3 {= battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: updateXT  {= battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: updateXK  {= battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+            }
+            // Battery empty
+            :: when (battery_charge < BATTERY_EMPTY) 
+            alt {
+                :: updateUhf {= cost += COST_BAD, battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: updateSun {= cost += COST_BAD, battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: update3F2 {= cost += COST_BAD, battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: update3F3 {= cost += COST_BAD, battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: updateXT {= cost += COST_BAD, battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+                :: updateXK {= cost += COST_BAD, battery_charge = BatteryCharge(), last_load = battery_load, last_time = current_time =}
+            }
+        }
+    }
+}
+
+process Sun()
+{
+    int start_power;
+    do
+    {   
+        invariant(time <= SUN_START[sun_i]) when (time >= SUN_START[sun_i]) updateSun {= current_time = SUN_START[sun_i], battery_load -= SUN_CONSUMPTION, start_power = SUN_CONSUMPTION =};
+        // For extra LBAND power
+        invariant(start_power == SUN_CONSUMPTION) when(start_power != SUN_CONSUMPTION) updateSun {= battery_load = battery_load + start_power - SUN_CONSUMPTION =};
+        invariant(time <= SUN_END[sun_i]) when (time >= SUN_END[sun_i]) updateSun {= current_time = SUN_END[sun_i], sun_i++, battery_load += SUN_CONSUMPTION =}
+    }
+}
+
+process Uhf()
+{
+    do
+    {   
+        invariant(time <= UHF_START[uhf_i]) when (time >= UHF_START[uhf_i]) updateUhf {= current_time = UHF_START[uhf_i], battery_load += UHF_CONSUMPTION =};
+        invariant(time <= UHF_END[uhf_i]) when (time >= UHF_END[uhf_i]) updateUhf {= battery_load -= UHF_CONSUMPTION, current_time = UHF_END[uhf_i], uhf_i++, uhf_jobs_done++ =}
+    }
+}
+
+
+process LBand3F2()
+{ 
+    invariant(time <= L_BAND_3F2_START[l_band_3f2_i] - SLEWING - PREHEATING) when (time >= L_BAND_3F2_START[l_band_3f2_i] - SLEWING - PREHEATING)
+    alt {
+    ::  when (!job_active)
+        // Start Preheat
+        update3F2 {= current_time = L_BAND_3F2_START[l_band_3f2_i] - SLEWING - PREHEATING, battery_load += PREHEAT_CONSUMPTION,  job_active = true =};
+        invariant(time <= L_BAND_3F2_START[l_band_3f2_i]) when (time >= L_BAND_3F2_START[l_band_3f2_i]) 
+        // Start Job
+        update3F2 {= current_time = L_BAND_3F2_START[l_band_3f2_i], battery_load += L_BAND_CONSUMPTION - PREHEAT_CONSUMPTION, solar_l_band = true, SUN_CONSUMPTION += 400 =};
+        invariant(time <= L_BAND_3F2_END[l_band_3f2_i]) when (time >= L_BAND_3F2_END[l_band_3f2_i]) 
+        // Start Slewing
+        update3F2 {= battery_load += PREHEAT_CONSUMPTION - L_BAND_CONSUMPTION, current_time = L_BAND_3F2_END[l_band_3f2_i]=};
+        invariant(time <= L_BAND_3F2_END[l_band_3f2_i] + SLEWING) when (time >= L_BAND_3F2_END[l_band_3f2_i] + SLEWING)
+        // Done
+        update3F2 {= current_time = L_BAND_3F2_END[l_band_3f2_i] + SLEWING, battery_load -= PREHEAT_CONSUMPTION, l_3f2_jobs_done++, l_band_3f2_i++, solar_l_band = false, SUN_CONSUMPTION -= 400,  job_active = false, cost += DynamicCost_3F2() =}; 
+        LBand3F2()
+    :: Skip3F2 {= l_band_3f2_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        LBand3F2()
+    :: when (job_active) Skip3F2 {= l_band_3f2_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        LBand3F2()
+    }
+}
+
+
+process LBand3F3()
+{ 
+    invariant(time <= L_BAND_3F3_START[l_band_3f3_i] - SLEWING - PREHEATING) when (time >= L_BAND_3F3_START[l_band_3f3_i] - SLEWING - PREHEATING)
+    alt {
+    ::  when (!job_active)
+        // Start Preheat
+        update3F3 {= current_time = L_BAND_3F3_START[l_band_3f3_i] - SLEWING - PREHEATING, battery_load += PREHEAT_CONSUMPTION,  job_active = true =};
+        invariant(time <= L_BAND_3F3_START[l_band_3f3_i]) when (time >= L_BAND_3F3_START[l_band_3f3_i]) 
+        // Start Job
+        update3F3 {= current_time = L_BAND_3F3_START[l_band_3f3_i], battery_load += L_BAND_CONSUMPTION - PREHEAT_CONSUMPTION, solar_l_band = true, SUN_CONSUMPTION += 400 =};
+        invariant(time <= L_BAND_3F3_END[l_band_3f3_i]) when (time >= L_BAND_3F3_END[l_band_3f3_i]) 
+        // Start Slewing
+        update3F3 {= battery_load += PREHEAT_CONSUMPTION - L_BAND_CONSUMPTION, current_time = L_BAND_3F3_END[l_band_3f3_i]=};
+        invariant(time <= L_BAND_3F3_END[l_band_3f3_i] + SLEWING) when (time >= L_BAND_3F3_END[l_band_3f3_i] + SLEWING)
+        // Done
+        update3F3 {= current_time = L_BAND_3F3_END[l_band_3f3_i] + SLEWING, battery_load -= PREHEAT_CONSUMPTION, l_3f3_jobs_done++, l_band_3f3_i++, solar_l_band = false, SUN_CONSUMPTION -= 400,  job_active = false, cost += DynamicCost_3F3() =}; 
+        LBand3F3()
+    :: Skip3F3 {= l_band_3f3_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        LBand3F3()
+    :: when (job_active) Skip3F3 {= l_band_3f3_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        LBand3F3()
+    }
+}
+
+
+process XBandToulou()
+{ 
+    invariant(time <= X_BAND_TOULOUSE_START[x_band_toulouse_i] - SLEWING) when (time >= X_BAND_TOULOUSE_START[x_band_toulouse_i] - SLEWING)
+    alt {
+    ::  when (!job_active)
+        // Start Preheat
+        updateXT {= current_time = X_BAND_TOULOUSE_START[x_band_toulouse_i] - SLEWING, battery_load += PREHEAT_CONSUMPTION,  job_active = true =};
+        invariant(time <= X_BAND_TOULOUSE_START[x_band_toulouse_i]) when (time >= X_BAND_TOULOUSE_START[x_band_toulouse_i]) 
+        // Start Job
+        updateXT {= current_time = X_BAND_TOULOUSE_START[x_band_toulouse_i], battery_load += X_BAND_CONSUMPTION - PREHEAT_CONSUMPTION, solar_l_band = false =};
+        invariant(time <= X_BAND_TOULOUSE_END[x_band_toulouse_i]) when (time >= X_BAND_TOULOUSE_END[x_band_toulouse_i]) 
+        // Start Slewing
+        updateXT {= battery_load += PREHEAT_CONSUMPTION - X_BAND_CONSUMPTION, current_time = X_BAND_TOULOUSE_END[x_band_toulouse_i]=};
+        invariant(time <= X_BAND_TOULOUSE_END[x_band_toulouse_i] + SLEWING) when (time >= X_BAND_TOULOUSE_END[x_band_toulouse_i] + SLEWING)
+        // Done
+        updateXT {= current_time = X_BAND_TOULOUSE_END[x_band_toulouse_i] + SLEWING, battery_load -= PREHEAT_CONSUMPTION, x_toulou_jobs_done++, x_band_toulouse_i++, solar_l_band = false,  job_active = false, cost += DynamicCost_XT() =}; 
+        XBandToulou()
+    :: SkipXT {= x_band_toulouse_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        XBandToulou()
+    :: when (job_active) SkipXT {= x_band_toulouse_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        XBandToulou()
+    }
+}
+
+process XBandKourou()
+{ 
+    invariant(time <= X_BAND_KOUROU_START[x_band_kourou_i] - SLEWING) when (time >= X_BAND_KOUROU_START[x_band_kourou_i] - SLEWING)
+    alt {
+    ::  when (!job_active)
+        // Start Preheat
+        updateXK {= current_time = X_BAND_KOUROU_START[x_band_kourou_i] - SLEWING, battery_load += PREHEAT_CONSUMPTION,  job_active = true =};
+        invariant(time <= X_BAND_KOUROU_START[x_band_kourou_i]) when (time >= X_BAND_KOUROU_START[x_band_kourou_i]) 
+        // Start Job
+        updateXK {= current_time = X_BAND_KOUROU_START[x_band_kourou_i], battery_load += X_BAND_CONSUMPTION - PREHEAT_CONSUMPTION, solar_l_band = false =};
+        invariant(time <= X_BAND_KOUROU_END[x_band_kourou_i]) when (time >= X_BAND_KOUROU_END[x_band_kourou_i]) 
+        // Start Slewing
+        updateXK {= battery_load += PREHEAT_CONSUMPTION - X_BAND_CONSUMPTION, current_time = X_BAND_KOUROU_END[x_band_kourou_i]=};
+        invariant(time <= X_BAND_KOUROU_END[x_band_kourou_i] + SLEWING) when (time >= X_BAND_KOUROU_END[x_band_kourou_i] + SLEWING)
+        // Done
+        updateXK {= current_time = X_BAND_KOUROU_END[x_band_kourou_i] + SLEWING, battery_load -= PREHEAT_CONSUMPTION, x_kourou_jobs_done++, x_band_kourou_i++, solar_l_band = false,  job_active = false, cost += DynamicCost_XK() =}; 
+        XBandKourou()
+    :: SkipXK {= x_band_kourou_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        XBandKourou()
+    :: when (job_active) SkipXK {= x_band_kourou_i++, jobs_skipped++, cost += COST_SKIP =}; 
+        XBandKourou()
+    }
+}
+
+
+par
+{
+    :: LinearBattery()
+    :: Sun()
+    :: Uhf()
+    :: LBand3F2()
+    :: LBand3F3()
+    :: XBandToulou()
+    :: XBandKourou()
+}

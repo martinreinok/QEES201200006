@@ -1,11 +1,5 @@
-# QEES201200006
-Quantitative Evaluation of Embedded Systems course at University of Twente
-
-# Project's goal 
-Create model checker to find optimal battery-aware experiment schedules for the GOMX-3 nanosatellite. Part 3 of the project focuses on validating computed schedules using a kinetic battery model. Models are created for running with [Modest toolset](https://www.modestchecker.net/).
-
-
 # Part 2
+
 ## Overview
 We make no assumptions of satellite previous jobs.  
 We have a large cost for skipping a job and even larger cost for empting the battery, so the model will always try to take a job.  
@@ -31,7 +25,7 @@ Modest result:
 147 -> 155 	UHF  
 241 -> 251 	UHF  
 336 -> 346 	UHF  
-431 -> 440  UHF
+431 -> 440  	UHF
 
 ## Schedule Python
 550 minutes (750k states done in ~151 seconds)  
@@ -44,7 +38,7 @@ Modest result:
 147 -> 155 	UHF  
 241 -> 251 	UHF  
 336 -> 346 	UHF  
-431 -> 440  UHF
+431 -> 440  	UHF
 
 # Part 3
 Initially our model was unable to produce proper schedule, we did some fixes to our model:
@@ -71,9 +65,10 @@ Full schedule in file: schedule_PYTHON.txt
 
 The "reformat_python_traces.py" generates a more readable traces from origial "checker.py" output.
 This output can be seen in "schedule_PYTHON.txt"
+The script also creates the arrays for kinetic model (600 minutes):
+
+const int LEN = 61;
+transient real[] times = [28, 39, 49, 55, 57, 59, 67, 68, 72, 119, 124, 129, 133, 135, 145, 147, 155, 168, 212, 221, 229, 241, 251, 251, 251, 251, 251, 265, 325, 336, 344, 346, 354, 354, 354, 354, 354, 366, 396, 396, 396, 396, 421, 423, 431, 440, 489, 499, 499, 499, 499, 499, 499, 499, 499, 516, 521, 526, 528, 532, 590];
+transient real[] loads =  [2989, 3403, 14934, 17564, 6033, 3403, 2989, -2711, -2711, -2297, -2297, 9234, 9234, -2297, -2711, -81, -2711, -2711, -2711, -2297, -2297, 333, -2297, 1152, 752, 6852, 752, 752, 752, 3382, -67, -2697, -3111, -2711, 2989, -2711, -2711, -2297, 1152, 752, 6852, 752, 752, 752, 3382, 752, -2697, -3111, -2711, 2989, -2711, -2297, 1152, 752, 6852, 6852, 6852, 752, 3382, 752, -2697];
 
 These arrays are plugged to the modest simulation and the output are plotted, results can be seen in "KineticBatterySimulation.png"
-
-## Kinetic battery model simulation result
-![Results](./KineticBatterySimulation.png)
-
